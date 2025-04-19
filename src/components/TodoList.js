@@ -1,17 +1,17 @@
-import React from 'react'
+import React from 'react';
 
-function Todolist(props) {
+function Todolist({ item, deleteItem }) {
   return (
     <li className="list-item">
-        {props.item}
-        <span className='icons'>
-        <i className="fa-solid fa-trash-can icon-delete" 
-        onClick={e=>{
-            props.deleteItem(props.index)
-        }}></i>
-        </span>
+      {item.title}
+      <span className="icons">
+        <i
+          className="fa-solid fa-trash-can icon-delete"
+          onClick={deleteItem}
+        ></i>
+      </span>
     </li>
-  )
+  );
 }
 
-export default Todolist
+export default Todolist;
