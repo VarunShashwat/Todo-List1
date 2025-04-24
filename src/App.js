@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import TodoInput from './components/TodoInput';
 import Todolist from './components/TodoList';
+import axios from 'axios';
 
 function App() {
   const [listTodo, setListTodo] = useState([]);
 
  
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts?_limit=10') 
-      .then((response) => response.json())
-      .then((data) => {
-        setListTodo(data); // set to state
+    axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10') 
+      .then((response) => {
+        setListTodo(response.data); 
       })
       .catch((err) => console.error('Error fetching posts:', err));
   }, []);
@@ -25,36 +25,31 @@ function App() {
         userId: 1,
       };
 
-      fetch('https://jsonplaceholder.typicode.com/posts', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
-        body: JSON.stringify(newPost),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setListTodo((prev) => [...prev, data]);
+      const addTodo = (newPost) => {
+        axios.post('https://jsonplaceholder.typicode.com/posts', newPost, {
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          }
+        })
+        .then((response) => {
+          setListTodo((prev) => [...prev, response.data]);
         })
         .catch((err) => console.error('Error posting todo:', err));
-    }
+      };
   };
+}
 
   
   const deleteListItem = (id) => {
-    fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-      method: 'DELETE',
+    axios.delete(`https://jsonplaceholder.typicode.com/posts/${id}`)
+    .then(response=>{
+      const updatedList = listTodo.filter((item) => item.id !== id);
+      setListTodo(updatedList);
     })
-      .then((response) => {
-        if (response.ok) {
-          const updatedList = listTodo.filter((item) => item.id !== id);
-          setListTodo(updatedList);
-        } else {
-          console.error('Failed to delete item');
-        }
-      })
-      .catch((err) => console.error('Error deleting todo:', err));
-  };
+    .catch((err) => console.error('Error deleting todo:', err));
+  }
+
+
 
   return (
     <div className="main-container">
@@ -78,5 +73,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
